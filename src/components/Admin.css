@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color:#6dd5ed;
+  height: 100vh;
+}
+#login .container #login-row #login-column #login-box {
+  margin-top: 120px;
+  max-width: 600px;
+  height: 320px;
+  border: 1px solid #9C9C9C;
+  background-color: #EAEAEA;
+}
+#login .container #login-row #login-column #login-box #login-form {
+  padding: 20px;
+}
+#login .container #login-row #login-column #login-box #login-form #register-link {
+  margin-top: -85px;
+}
+.ordersList{
+  width: 50%;
+  border: khaki 2px solid;
+  padding: 20px;
+  margin:  0 auto
+}
+.EditOrder{
+  height: 50%;
+  width: 50%;
+  margin: 0 auto
+  
+}
