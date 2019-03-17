@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import "./practitioner.css";
 import firebase from "firebase";
-import uuid from "uuid";
 
 export default class Parents extends Component {
   constructor(props) {

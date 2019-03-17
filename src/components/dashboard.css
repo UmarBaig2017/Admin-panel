@@ -1,0 +1,13 @@
+body{
+    background-color: aliceblue;
+    text-align: center
+}
+.row{
+    background-color: aquamarine
+}
+.rectangle{
+    height: 300px;
+    width: 100%;
+    background-color: aqua;
+
+}

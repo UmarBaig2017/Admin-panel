@@ -3,7 +3,7 @@ import { Route, Router } from "react-router-dom";
 import AdminSignIn from "./components/Admin";
 import Practitioner from "./components/PRACTITIONER";
 import Parents from './components/Parents'
-
+import Dashboard from "./components/dashboard"
 
 import history from "./History";
 
@@ -15,7 +15,8 @@ class Routers extends Component {
       <Router history={history}>
         <div>
           <Route  path="/signin" component={AdminSignIn} />
-          <Route exact path="/" component={Parents} />
+          <Route exact path="/" component={Dashboard} />
+          <Route  path="/Practitioner" component={Parents} />
         </div>
       </Router>
     );
