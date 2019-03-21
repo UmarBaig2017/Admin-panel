@@ -4,7 +4,7 @@ import AdminSignIn from "./components/Admin";
 import Practitioner from "./components/PRACTITIONER";
 import Parents from './components/Parents'
 import Dashboard from "./components/dashboard"
-
+import Dash from './components/dash'
 import history from "./History";
 
 // export const history = createBrowserHistory()
@@ -15,8 +15,9 @@ class Routers extends Component {
       <Router history={history}>
         <div>
           <Route  path="/signin" component={AdminSignIn} />
-          <Route exact path="/" component={Dashboard} />
-          <Route  path="/Practitioner" component={Parents} />
+          <Route exact path="/" component={Dash} />
+          <Route  path="/Practitioner" component={Practitioner} />
+          <Route  path="/parent" component={Parents} />
         </div>
       </Router>
     );

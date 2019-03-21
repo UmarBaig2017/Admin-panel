@@ -16,6 +16,7 @@ export default class Practitioner extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      success: false,
       fname: "",
       lname: "",
       email: "",
@@ -31,10 +32,9 @@ export default class Practitioner extends Component {
       level: "",
       degree: "",
       Gender: "",
-      Age: "",
       Care: "",
       info: "",
-      downloadURL:''
+      downloadURL: ""
     };
   }
 
@@ -45,20 +45,25 @@ export default class Practitioner extends Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-
+    console.log(this.state);
     let db = firebase.database();
     db.ref("Practitioners")
       .push(this.state)
       .then(e => {
-        console.log("submit");
+        console.log("success");
+        this.setState({
+          success: true
+        });
       });
 
     console.log(this.state);
   }
   handlePictureUpload(e) {
-    
     // ref(`images/${this.state.file}`)
-    let uploadTask = firebase.storage().ref(`images/`).put(e.target.files[0])
+    let uploadTask = firebase
+      .storage()
+      .ref("images" + Math.random())
+      .put(e.target.files[0]);
     // var uploadTask = storageRef.child('images/').put(this.state.file);
 
     // Register three observers:
@@ -66,33 +71,55 @@ export default class Practitioner extends Component {
     // 2. Error observer, called on failure
     // 3. Completion observer, called on successful completion
 
-    uploadTask.on('state_changed', (snapshot)=>{
-      // Observe state change events such as progress, pause, and resume
-      // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log('Upload is ' + progress + '% done');
-      switch (snapshot.state) {
-        case firebase.storage.TaskState.PAUSED: // or 'paused'
-          console.log('Upload is paused');
-          break;
-        case firebase.storage.TaskState.RUNNING: // or 'running'
-          console.log('Upload is running');
-          break;
+    uploadTask.on(
+      "state_changed",
+      snapshot => {
+        // Observe state change events such as progress, pause, and resume
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+        switch (snapshot.state) {
+          case firebase.storage.TaskState.PAUSED: // or 'paused'
+            console.log("Upload is paused");
+            break;
+          case firebase.storage.TaskState.RUNNING: // or 'running'
+            console.log("Upload is running");
+            break;
+        }
+      },
+      error => {
+        // Handle unsuccessful uploads
+      },
+      () => {
+        // Handle successful uploads on complete
+        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+        uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+          console.log(downloadURL);
+          this.setState({ downloadURL });
+        });
       }
-    }, (error) =>{
-      // Handle unsuccessful uploads
-    }, ()=> {
-      // Handle successful uploads on complete
-      // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-      uploadTask.snapshot.ref.getDownloadURL().then((downloadURL)=> {
-        console.log(downloadURL)
-        this.setState({downloadURL})
-      });
-    });
+    );
   }
   render() {
     return (
       <div>
+        {this.state.success && (
+          <div
+            class="alert alert-warning alert-dismissible fade show"
+            role="alert"
+          >
+            <button
+              type="button"
+              class="close"
+              data-dismiss="alert"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <strong>Holy guacamole!</strong> You should check in on some of
+            those fields below.
+          </div>
+        )}
         <div>
           <h1>Practitioner</h1>
         </div>
@@ -112,14 +139,12 @@ export default class Practitioner extends Component {
             value={this.state.lname}
             onChange={this.handleChange.bind(this)}
             name="lname"
-            autoFocus={true}
             className="form-control"
           />
           Email
           <input
             type="email"
             name="email"
-            autoFocus={true}
             onChange={this.handleChange.bind(this)}
             value={this.state.email}
             className="form-control"
@@ -140,7 +165,6 @@ export default class Practitioner extends Component {
             value={this.state.password}
             onChange={this.handleChange.bind(this)}
             name="password"
-            autoFocus={true}
             className="form-control"
           />
           Region:
@@ -149,7 +173,6 @@ export default class Practitioner extends Component {
             value={this.state.region}
             onChange={this.handleChange.bind(this)}
             name="region"
-            autoFocus={true}
             className="form-control"
           />
           contact:
@@ -168,7 +191,6 @@ export default class Practitioner extends Component {
             value={this.state.postCode}
             onChange={this.handleChange.bind(this)}
             name="postCode"
-            autoFocus={true}
             className="form-control"
           />
           Do you have valid DBS :

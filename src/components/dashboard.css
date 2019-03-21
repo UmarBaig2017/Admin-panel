@@ -1,13 +1,20 @@
 body{
-    background-color: aliceblue;
+    
     text-align: center
 }
 .row{
-    background-color: aquamarine
+  
 }
-.rectangle{
-    height: 300px;
-    width: 100%;
-    background-color: aqua;
 
+button:focus{
+    background: black
+}
+.Pract{
+    background-color: black
+}
+#row{
+    border: 1px black solid
+}
+.h1{
+    font-family: Free Handwritten Font
 }
