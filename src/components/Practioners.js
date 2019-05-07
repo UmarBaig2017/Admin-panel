@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import firebase from "firebase";
 import "./Pract.css";
 import Modal from "react-responsive-modal";
+import { Button, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 export default class Practioners extends Component {
 
   constructor(props) {
@@ -9,14 +10,16 @@ export default class Practioners extends Component {
     this.state = {
       Pract: [],
       currentPage: 1,
-      todosPerPage: 5,
+      ItemPerPage: 5,
       Bucket: [],
       Orders: [],
       searchVal: "",
-      modelData: ""
+      modelData: "",
+      modal: false
 
 
     };
+    this.Pagination = this.Pagination.bind(this)
     this.handleClick = this.handleClick.bind(this);
     this.handleDelete = this.handleDelete.bind(this)
     this.fetchData = this.fetchData.bind(this)
@@ -28,6 +31,11 @@ export default class Practioners extends Component {
     this.setState({
       currentPage: Number(event.target.id)
     });
+  }
+  toggle() {
+    this.setState(prevState => ({
+      modal: !prevState.modal
+    }));
   }
   handleSearch(e) {
     this.setState({ searchVal: e.target.value }, function () {
@@ -62,7 +70,7 @@ export default class Practioners extends Component {
     this.setState({
       Pract: [],
       currentPage: 1,
-      todosPerPage: 5,
+      ItemPerPage: 5,
       Bucket: [],
       Orders: [],
       searchVal: ""
@@ -92,41 +100,47 @@ export default class Practioners extends Component {
     firebaseRef.remove().then(() => {
       this.fetchData()
     })
-
+    
   }
   onOpenModal = (key) => {
-
+    
     this.handleModel(key)
   };
   handleModel(key) {
     let result = this.state.Pract.filter(obj => {
       return (
         obj.id === key
-      )
-    })
-    console.log(result)
-    this.setState({
-      modelData: result,
-      open: true
-    })
+        )
+      })
+      console.log(result)
+      this.setState({
+        modelData: result,
+        open: true
+      })
+      
+    }
+    onCloseModal = () => {
+      this.setState({ open: false });
+      
+    };
+    
+    Pagination(){
 
-  }
-  onCloseModal = () => {
-    this.setState({ open: false });
 
-  };
-
+      
+  
+    }
   render() {
-    const { open, Pract, currentPage, todosPerPage } = this.state;
+    const { open, Pract, currentPage, ItemPerPage } = this.state;
     // Logic for displaying current todos
-    const indexOfLastTodo = currentPage * todosPerPage;
-    const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
+    const indexOfLastTodo = currentPage * ItemPerPage;
+    const indexOfFirstTodo = indexOfLastTodo - ItemPerPage;
     const currentTodos = Pract.slice(indexOfFirstTodo, indexOfLastTodo);
 
 
     // Logic for displaying page numbers
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(Pract.length / todosPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(Pract.length / ItemPerPage); i++) {
       pageNumbers.push(i);
     }
 
@@ -146,12 +160,14 @@ export default class Practioners extends Component {
       <div className="col-sm-10">
         <div className="aside">
           <center>
-            <h3>Practioners</h3>{" "}
+            <h3 style={{"color": "black"}}>Practioners</h3>{" "}
           </center>
           {/* electronic functionality*/}
           <div className="d-flex align-items-start E-fucn-con">
             <div className="p-2 E-fucn-con1">
-              <span className="e-func-inherit" style={{ "color": "black" }} ><h2>  Practitioners {this.state.Pract.length}</h2> </span>
+            <span class="e-func-inherit"></span>
+            <span class="e-func-inherit"></span>
+            <span class="e-func-inherit"></span>
             </div>
             {/*drop down */}
             <div className="p-2 drop">
@@ -245,7 +261,7 @@ export default class Practioners extends Component {
         <div>
           <Modal open={open} onClose={this.onCloseModal} center>
 
-            <div className="Model">
+            <div style={{"padding": "20"}} className="Model">
               {this.state.modelData &&
                 <div>
                   <h2>Name : {this.state.modelData[0].first_name}</h2>

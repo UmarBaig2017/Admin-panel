@@ -70,7 +70,7 @@ export default class MainComponent extends Component {
     })
     promise.catch(e => {
         let err = e.message;
-        console.log(err);
+        alert("admin not created , Try again")
     })
   }
 
@@ -147,8 +147,10 @@ export default class MainComponent extends Component {
                  
                   type="email"
                   name="SubEmail"
+
                   value={this.state.SubEmail}
                   className="form-control"
+                  onChange={this.handleChnage.bind(this)}
                 />
                 <label>Password</label>
                 <input

@@ -146,12 +146,14 @@ export default class Parents extends Component {
       <div className="col-sm-10">
         <div className="aside">
           <center>
-            <h3>Practioners</h3>{" "}
+            <h3 style={{"color": "black"}}> Parents</h3>{" "}
           </center>
           {/* electronic functionality*/}
           <div className="d-flex align-items-start E-fucn-con">
             <div className="p-2 E-fucn-con1">
-              <span className="e-func-inherit" style={{ "color": "black" }} ><h2>  Parents {this.state.Pract.length}</h2> </span>
+            <span class="e-func-inherit"></span>
+            <span class="e-func-inherit"></span>
+            <span class="e-func-inherit"></span>
             </div>
             {/*drop down */}
             <div className="p-2 drop">

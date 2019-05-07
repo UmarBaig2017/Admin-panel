@@ -146,12 +146,14 @@ export default class Orders extends Component {
       <div className="col-sm-10">
         <div className="aside">
           <center>
-            <h3>Ordersioners</h3>{" "}
+          <h3 style={{"color": "black" , }}> Orders </h3>{" "}
           </center>
           {/* electronic functionality*/}
           <div className="d-flex align-items-start E-fucn-con">
-            <div className="p-2 E-fucn-con1">
-              <span className="e-func-inherit" style={{ "color": "black" }} ><h2>  Parents {this.state.Orders.length}</h2> </span>
+            <div  className="p-2 E-fucn-con1">
+            <span class="e-func-inherit"></span>
+            <span class="e-func-inherit"></span>
+            <span class="e-func-inherit"></span>
             </div>
             {/*drop down */}
             <div className="p-2 drop">
@@ -247,11 +249,11 @@ export default class Orders extends Component {
         <div>
           <Modal open={open} onClose={this.onCloseModal} center>
 
-            <div className="Model">
+            <div  className="Model">
               {this.state.modelData &&
                 <div>
-                  <h2>Email : {this.state.modelData[0].practitioner_email}</h2>
-                  <h2> Price : {this.state.modelData[0].price}</h2>
+                  <h2 style={{"fontFamily": "Segoe UI', Tahoma, Geneva, Verdana, sans-serif"}}>Email : {this.state.modelData[0].practitioner_email}</h2>
+                  <h2 style={{"fontFamily": "Segoe UI', Tahoma, Geneva, Verdana, sans-serif"}}> Price : {this.state.modelData[0].price}</h2>
                
                  
                 </div>
