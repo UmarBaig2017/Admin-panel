@@ -1,110 +1,271 @@
 import React, { Component } from "react";
-import "./practitioner.css";
 import firebase from "firebase";
-
+import "./Pract.css";
+import Modal from "react-responsive-modal";
 export default class Parents extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
-      fname: "",
-      lname: "",
-      email: "",
+      Pract: [],
+      currentPage: 1,
+      todosPerPage: 5,
+      Bucket: [],
+      Orders: [],
+      searchVal: "",
+      modelData: ""
 
-      postCode: "",
-      region: "",
 
-      info: ""
     };
+    this.handleClick = this.handleClick.bind(this);
+    this.handleDelete = this.handleDelete.bind(this)
+    this.fetchData = this.fetchData.bind(this)
+    this.handleModel = this.handleModel.bind(this)
+    this.messageIdGenerator = this.messageIdGenerator.bind(this)
+    this.handlefilter = this.handlefilter.bind(this)
   }
-
-  handleChange(e) {
+  handleClick(event) {
     this.setState({
-      [e.target.name]: e.target.value
+      currentPage: Number(event.target.id)
     });
   }
-  handleSubmit(e) {
-    e.preventDefault();
-
-    let db = firebase.database();
-    db.ref("Parents")
-      .push(this.state)
-      .then(e => {
-        console.log("submit");
-      });
-
-    console.log(this.state);
+  handleSearch(e) {
+    this.setState({ searchVal: e.target.value }, function () {
+      this.handlefilter()
+    })
   }
+  handlefilter() {
+    let filteredOrders = this.state.Pract.filter(order => {
+      return (
+        order.first_name.toLowerCase().indexOf(this.state.searchVal) !==
+        -1
+      );
+    } ,function(){
+      this.setState({
+        Pract : filteredOrders
+      })
+     console.log(this.state.Pract)
+    })
+  }
+  messageIdGenerator() {
+    // generates uuid.
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+      let r = (Math.random() * 16) | 0,
+        v = c == "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+  componentDidMount() {
+    this.fetchData()
+  }
+  fetchData() {
+    this.setState({
+      Pract: [],
+      currentPage: 1,
+      todosPerPage: 5,
+      Bucket: [],
+      Orders: [],
+      searchVal: ""
+    })
+    let arr = [];
+    let firebaseRef = firebase.database().ref("parents");
+    firebaseRef.once("value", snap => {
+      snap.forEach(Key => {
+        let dataRef = firebaseRef.child(Key.ref.key).key;
+
+        let data = snap.child(dataRef).val();
+
+        data.firebasekEY = dataRef
+        data.id = this.messageIdGenerator()
+
+        arr.push(data)
+        this.setState({
+          Pract: arr
+        });
+        console.log(this.state.Pract)
+      });
+    });
+
+  }
+  handleDelete(key) {
+    let firebaseRef = firebase.database().ref("Practitioners").child(key)
+    firebaseRef.remove().then(() => {
+      this.fetchData()
+    })
+
+  }
+  onOpenModal = (key) => {
+
+    this.handleModel(key)
+  };
+  handleModel(key) {
+    let result = this.state.Pract.filter(obj => {
+      return (
+        obj.id === key
+      )
+    })
+    console.log(result)
+    this.setState({
+      modelData: result,
+      open: true
+    })
+
+  }
+  onCloseModal = () => {
+    this.setState({ open: false });
+
+  };
+
   render() {
+    const { open, Pract, currentPage, todosPerPage } = this.state;
+    // Logic for displaying current todos
+    const indexOfLastTodo = currentPage * todosPerPage;
+    const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
+    const currentTodos = Pract.slice(indexOfFirstTodo, indexOfLastTodo);
+
+
+    // Logic for displaying page numbers
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(Pract.length / todosPerPage); i++) {
+      pageNumbers.push(i);
+    }
+
+    const renderPageNumbers = pageNumbers.map(number => {
+      return (
+        <button className="buttonS"
+          key={number}
+          id={number}
+          onClick={this.handleClick}
+        >
+          {number}
+        </button>
+      );
+    });
+ 
     return (
-      <div>
-        <div>
-          {" "}
-          <h1> Parents </h1>
+      <div className="col-sm-10">
+        <div className="aside">
+          <center>
+            <h3>Practioners</h3>{" "}
+          </center>
+          {/* electronic functionality*/}
+          <div className="d-flex align-items-start E-fucn-con">
+            <div className="p-2 E-fucn-con1">
+              <span className="e-func-inherit" style={{ "color": "black" }} ><h2>  Parents {this.state.Pract.length}</h2> </span>
+            </div>
+            {/*drop down */}
+            <div className="p-2 drop">
+              <div className="btn-group" class="drop-btn">
+                <button type="button" class="btn btn-danger">
+                  Action
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger dropdown-toggle dropdown-toggle-split"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false">
+                  <span className="sr-only">Toggle Dropdown</span>
+                </button>
+                <div className="dropdown-menu">
+                  <a className="dropdown-item" href="#">
+                    Action
+                  </a>
+                  <a className="dropdown-item" href="#">
+                    Another action
+                  </a>
+                  <a className="dropdown-item" href="#">
+                    Something else here
+                  </a>
+                  <div className="dropdown-divider" />
+                  <a className="dropdown-item" href="#">
+                    Separated link
+                  </a>
+                </div>
+              </div>
+            </div>
+            {/*dropdown end */}
+          </div>
+
+          {/*search bar */}
+
+          <form>
+            <div class="col-auto">
+              <i class="fas fa-search h4 text-body" />
+            </div>
+            {/*end of col */}
+            <div class="col">
+              <input onChange={this.handleSearch.bind(this)}
+                value={this.state.searchVal}
+                name="searchVal"
+                class="form-control form-control-lg form-control-borderless"
+                type="search"
+                placeholder="Search topics or keywords"
+              />
+            </div>
+            {/*end of col */}
+
+            {/*end of col */}
+          </form>
+
+          {/*end of col */}
+
+          {/*search bar */}
+          {/*table start */}
+          <div class="col-s-12">
+            <div class="table-responsive">
+              <table style={{ "color": "black", "textAlign": "center", "backgroundColor": "white", "border": "1" }} class="w3-table">
+                <tr>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Post Code</th>
+                  <th>Region</th>
+                  <th>Actions</th>
+                </tr>
+                {currentTodos.map((item, index) => {
+                  return (
+                    <tr key={item.firebaseRef}>
+                      <td>{item.first_name}</td>
+                      <td>{item.last_name}</td>
+                      <td>{item.post_code_1}</td>
+                      <td>{item.region}</td>
+                      <td>
+                        <button onClick={() => this.handleDelete(item.firebasekEY)} className="btn btn-primery"> Delete </button>
+                        <button onClick={() => this.onOpenModal(item.id)} className="btn btn-primery"> View </button>
+                      </td>
+                    </tr>
+                  )
+                })}
+                <ul id="page-numbers">
+                  {renderPageNumbers}
+                </ul>
+              </table>
+            </div>
+          </div>
+          {/*main table end */}
         </div>
-        <form className="prac-form">
-          First Name:
-          <input
-            type="text"
-            value={this.state.fname}
-            onChange={this.handleChange.bind(this)}
-            name="fname"
-            autoFocus={true}
-            className="form-control"
-          />
-          Second Name:
-          <input
-            type="text"
-            value={this.state.lname}
-            onChange={this.handleChange.bind(this)}
-            name="lname"
-            autoFocus={true}
-            className="form-control"
-          />
-          Email
-          <input
-            type="email"
-            name="email"
-            autoFocus={true}
-            onChange={this.handleChange.bind(this)}
-            value={this.state.email}
-            className="form-control"
-            required="required"
-          />
-          Region:
-          <input
-            type="text"
-            value={this.state.region}
-            onChange={this.handleChange.bind(this)}
-            name="region"
-            autoFocus={true}
-            className="form-control"
-          />
-          Post code :
-          <input
-            type="text"
-            pattern="[0-9]*"
-            value={this.state.postCode}
-            onChange={this.handleChange.bind(this)}
-            name="postCode"
-            autoFocus={true}
-            className="form-control"
-          />
-          Information:
-          <input
-            type="text"
-            value={this.state.info}
-            onChange={this.handleChange.bind(this)}
-            name="info"
-            className="form-control"
-          />
-          <button
-            onClick={this.handleSubmit.bind(this)}
-            className="btn-btn-warning"
-          >
-            {" "}
-            Submit
-          </button>
-        </form>
+        <div>
+          <Modal open={open} onClose={this.onCloseModal} center>
+
+            <div className="Model">
+              {this.state.modelData &&
+                <div>
+                  <h2>Name : {this.state.modelData[0].first_name} {this.state.modelData[0].last_name}</h2>
+                  <h2> Post Code # 2 : {this.state.modelData[0].post_code_2}</h2>
+                  <h2> Post Code # 3 : {this.state.modelData[0].post_code_3}</h2>
+                  <h2> Region : {this.state.modelData[0].region}</h2>
+                 
+                </div>
+              }
+
+
+            </div>
+
+
+
+
+          </Modal>
+        </div>
       </div>
     );
   }
