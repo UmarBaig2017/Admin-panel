@@ -2,26 +2,21 @@ import React, { Component } from "react";
 import "./App.css";
 import MainComponent from "./components/MainComponent"
 import firebase from "firebase";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom"
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStroopwafel } from "@fortawesome/free-solid-svg-icons";
+import { BrowserRouter as Router, Route } from "react-router-dom"
+
 import SignIn from "./components/Signin"
 // Initialize Firebase
 let config = {
-  apiKey: "AIzaSyCnj6nYUvn9KcY1E1ixsuxbsYd9EhOxAs8",
-  authDomain: "admin-panel-debec.firebaseapp.com",
-  databaseURL: "https://admin-panel-debec.firebaseio.com",
-  projectId: "admin-panel-debec",
-  storageBucket: "admin-panel-debec.appspot.com",
-  messagingSenderId: "986913561934"
+  apiKey: "AIzaSyBCptsMZftMbTiFjEF5qDFEgcEeSFUzaBQ",
+    authDomain: "chidlcareapp.firebaseapp.com",
+    databaseURL: "https://chidlcareapp.firebaseio.com",
+    projectId: "chidlcareapp",
+    storageBucket: "chidlcareapp.appspot.com",
+    messagingSenderId: "998871249996",
+    appId: "1:998871249996:web:9fb45eda2d0b20db"
 };
 firebase.initializeApp(config);
 class App extends Component {
-  constructor(props){
-    super(props)
-   
-  }
   componentDidMount(){
    
   }
@@ -30,7 +25,7 @@ class App extends Component {
     return (
       // navebar
       <Router>
-      <Route path="/" exact component={SignIn} />
+      <Route exact path="/" component={SignIn} />
       <Route path="/Dashboard" component={MainComponent} />
     
       </Router>

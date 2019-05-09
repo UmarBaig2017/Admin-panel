@@ -20,6 +20,14 @@ html, body {
 .buttonS:active{
   color: red
 }
-
+.mapDataTable{
+  background-color: lightblue;
+  height: 5px;
+  width: 10;
+  overflow-y: scroll;
+}
   
-  
+.table-responsive{
+  overflow: scroll;
+  height: 200px;
+}

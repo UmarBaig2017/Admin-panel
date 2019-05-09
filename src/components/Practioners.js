@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import firebase from "firebase";
 import "./Pract.css";
+
 import Modal from "react-responsive-modal";
-import { Button, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+
 export default class Practioners extends Component {
 
   constructor(props) {
@@ -10,22 +11,22 @@ export default class Practioners extends Component {
     this.state = {
       Pract: [],
       currentPage: 1,
-      ItemPerPage: 5,
+      ItemPerPage: 1,
       Bucket: [],
       Orders: [],
       searchVal: "",
       modelData: "",
-      modal: false
-
-
+      modal: false,
+      isNotSerching: true,
+      filtertd: []
     };
-    this.Pagination = this.Pagination.bind(this)
+    this.toggle = this.toggle.bind(this)
     this.handleClick = this.handleClick.bind(this);
     this.handleDelete = this.handleDelete.bind(this)
     this.fetchData = this.fetchData.bind(this)
     this.handleModel = this.handleModel.bind(this)
     this.messageIdGenerator = this.messageIdGenerator.bind(this)
-    this.handlefilter = this.handlefilter.bind(this)
+
   }
   handleClick(event) {
     this.setState({
@@ -38,28 +39,14 @@ export default class Practioners extends Component {
     }));
   }
   handleSearch(e) {
-    this.setState({ searchVal: e.target.value }, function () {
-      this.handlefilter()
-    })
+    this.setState({ searchVal: e.target.value })
   }
-  handlefilter() {
-    let filteredOrders = this.state.Pract.filter(order => {
-      return (
-        order.first_name.toLowerCase().indexOf(this.state.searchVal) !==
-        -1
-      );
-    } ,function(){
-      this.setState({
-        Pract : filteredOrders
-      })
-     console.log(this.state.Pract)
-    })
-  }
+  
   messageIdGenerator() {
     // generates uuid.
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
       let r = (Math.random() * 16) | 0,
-        v = c == "x" ? r : (r & 0x3) | 0x8;
+        v = c === "x" ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
   }
@@ -73,10 +60,12 @@ export default class Practioners extends Component {
       ItemPerPage: 5,
       Bucket: [],
       Orders: [],
-      searchVal: ""
+      searchVal: "",
+      RenderItems: [],
+      isSerching: true
     })
     let arr = [];
-    let firebaseRef = firebase.database().ref("Practitioners");
+    let firebaseRef = firebase.database().ref("practitioner");
     firebaseRef.once("value", snap => {
       snap.forEach(Key => {
         let dataRef = firebaseRef.child(Key.ref.key).key;
@@ -90,154 +79,109 @@ export default class Practioners extends Component {
         this.setState({
           Pract: arr
         });
-        console.log(this.state.Pract)
+      
       });
     });
 
   }
   handleDelete(key) {
-    let firebaseRef = firebase.database().ref("Practitioners").child(key)
+    let firebaseRef = firebase.database().ref("practitioner").child(key)
     firebaseRef.remove().then(() => {
       this.fetchData()
     })
-    
+
   }
   onOpenModal = (key) => {
-    
+
     this.handleModel(key)
   };
   handleModel(key) {
     let result = this.state.Pract.filter(obj => {
       return (
         obj.id === key
-        )
-      })
-      console.log(result)
-      this.setState({
-        modelData: result,
-        open: true
-      })
-      
-    }
-    onCloseModal = () => {
-      this.setState({ open: false });
-      
-    };
-    
-    Pagination(){
+      )
+    })
+   
+    this.setState({
+      modelData: result,
+      open: true
+    })
+
+  }
+  onCloseModal = () => {
+    this.setState({ open: false });
+
+  };
 
 
-      
-  
-    }
   render() {
-    const { open, Pract, currentPage, ItemPerPage } = this.state;
-    // Logic for displaying current todos
-    const indexOfLastTodo = currentPage * ItemPerPage;
-    const indexOfFirstTodo = indexOfLastTodo - ItemPerPage;
-    const currentTodos = Pract.slice(indexOfFirstTodo, indexOfLastTodo);
-
-
-    // Logic for displaying page numbers
-    const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(Pract.length / ItemPerPage); i++) {
-      pageNumbers.push(i);
-    }
-
-    const renderPageNumbers = pageNumbers.map(number => {
+    const { open } = this.state
+    let filteredOrders = this.state.Pract.filter(order => {
       return (
-        <button className="buttonS"
-          key={number}
-          id={number}
-          onClick={this.handleClick}
-        >
-          {number}
-        </button>
+        order.first_name.indexOf(this.state.searchVal) !==
+        -1
       );
-    });
- 
+    }, 
+    )
+  
+
     return (
       <div className="col-sm-10">
         <div className="aside">
           <center>
-            <h3 style={{"color": "black"}}>Practioners</h3>{" "}
+            <h3 style={{ "color": "black" }}>Practioners</h3>
           </center>
           {/* electronic functionality*/}
           <div className="d-flex align-items-start E-fucn-con">
             <div className="p-2 E-fucn-con1">
-            <span class="e-func-inherit"></span>
-            <span class="e-func-inherit"></span>
-            <span class="e-func-inherit"></span>
+              <span className="e-func-inherit"></span>
+              <span className="e-func-inherit"></span>
+              <span className="e-func-inherit"></span>
             </div>
             {/*drop down */}
-            <div className="p-2 drop">
-              <div className="btn-group" class="drop-btn">
-                <button type="button" class="btn btn-danger">
-                  Action
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-danger dropdown-toggle dropdown-toggle-split"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false">
-                  <span className="sr-only">Toggle Dropdown</span>
-                </button>
-                <div className="dropdown-menu">
-                  <a className="dropdown-item" href="#">
-                    Action
-                  </a>
-                  <a className="dropdown-item" href="#">
-                    Another action
-                  </a>
-                  <a className="dropdown-item" href="#">
-                    Something else here
-                  </a>
-                  <div className="dropdown-divider" />
-                  <a className="dropdown-item" href="#">
-                    Separated link
-                  </a>
-                </div>
-              </div>
-            </div>
+           
             {/*dropdown end */}
           </div>
 
           {/*search bar */}
 
           <form>
-            <div class="col-auto">
-              <i class="fas fa-search h4 text-body" />
+            <div className="col-auto">
+             
             </div>
             {/*end of col */}
-            <div class="col">
+           
+              <div className="col">
               <input onChange={this.handleSearch.bind(this)}
                 value={this.state.searchVal}
                 name="searchVal"
-                class="form-control form-control-lg form-control-borderless"
+                className="form-control form-control-lg form-control-borderless"
                 type="search"
-                placeholder="Search topics or keywords"
+                placeholder="Search by name"
               />
             </div>
             {/*end of col */}
 
             {/*end of col */}
           </form>
-
+      <div></div>
           {/*end of col */}
 
           {/*search bar */}
           {/*table start */}
-          <div class="col-s-12">
-            <div class="table-responsive">
-              <table style={{ "color": "black", "textAlign": "center", "backgroundColor": "white", "border": "1" }} class="w3-table">
-                <tr>
+          <div className="col-s-12">
+            <div   className="table-responsive">
+              <table  style={{ "color": "black", "textAlign": "center", "backgroundColor": "white", "border": "1", "overflow": 'scroll',}} className="w3-table">
+              <thead>
+              <tr >
                   <th>First Name</th>
                   <th>Last Name</th>
                   <th>Contact</th>
                   <th>Actions</th>
                 </tr>
-                {currentTodos.map((item, index) => {
+                </thead> 
+                <tbody>
+                {filteredOrders.map((item, index) => {
                   return (
                     <tr key={item.firebaseRef}>
                       <td>{item.first_name}</td>
@@ -248,12 +192,13 @@ export default class Practioners extends Component {
                         <button onClick={() => this.onOpenModal(item.id)} className="btn btn-primery"> View </button>
                       </td>
                     </tr>
+                    
                   )
                 })}
-                <ul id="page-numbers">
-                  {renderPageNumbers}
-                </ul>
+                </tbody>
+            
               </table>
+
             </div>
           </div>
           {/*main table end */}
@@ -261,7 +206,7 @@ export default class Practioners extends Component {
         <div>
           <Modal open={open} onClose={this.onCloseModal} center>
 
-            <div style={{"padding": "20"}} className="Model">
+            <div style={{ "padding": "20" }} className="Model">
               {this.state.modelData &&
                 <div>
                   <h2>Name : {this.state.modelData[0].first_name}</h2>

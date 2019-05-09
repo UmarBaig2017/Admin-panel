@@ -2,6 +2,12 @@ import React, { Component } from "react";
 import firebase from "firebase";
 import "./Pract.css";
 import Modal from "react-responsive-modal";
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem
+} from "reactstrap";
 export default class Orders extends Component {
 
   constructor(props) {
@@ -11,7 +17,7 @@ export default class Orders extends Component {
       currentPage: 1,
       todosPerPage: 5,
       Bucket: [],
-      Orders: [],
+    
       searchVal: "",
       modelData: ""
 
@@ -22,7 +28,8 @@ export default class Orders extends Component {
     this.fetchData = this.fetchData.bind(this)
     this.handleModel = this.handleModel.bind(this)
     this.messageIdGenerator = this.messageIdGenerator.bind(this)
-    this.handlefilter = this.handlefilter.bind(this)
+    this.toggle = this.toggle.bind(this)
+
   }
   handleClick(event) {
     this.setState({
@@ -30,28 +37,19 @@ export default class Orders extends Component {
     });
   }
   handleSearch(e) {
-    this.setState({ searchVal: e.target.value }, function () {
-      this.handlefilter()
-    })
+    this.setState({ searchVal: e.target.value })
   }
-  handlefilter() {
-    let filteredOrders = this.state.Orders.filter(order => {
-      return (
-        order.first_name.toLowerCase().indexOf(this.state.searchVal) !==
-        -1
-      );
-    } ,function(){
-      this.setState({
-        Orders : filteredOrders
-      })
-     console.log(this.state.Orders)
-    })
+  toggle() {
+    this.setState(prevState => ({
+      dropdownOpen: !prevState.dropdownOpen
+    }));
   }
+
   messageIdGenerator() {
     // generates uuid.
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
       let r = (Math.random() * 16) | 0,
-        v = c == "x" ? r : (r & 0x3) | 0x8;
+        v = c === "x" ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
   }
@@ -64,7 +62,6 @@ export default class Orders extends Component {
       currentPage: 1,
       todosPerPage: 5,
       Bucket: [],
-      Orders: [],
       searchVal: ""
     })
     let arr = [];
@@ -77,12 +74,11 @@ export default class Orders extends Component {
 
         data.firebasekEY = dataRef
         data.id = this.messageIdGenerator()
-
         arr.push(data)
         this.setState({
           Orders: arr
         });
-        console.log(this.state.Orders)
+      
       });
     });
 
@@ -104,7 +100,7 @@ export default class Orders extends Component {
         obj.id === key
       )
     })
-    console.log(result)
+ 
     this.setState({
       modelData: result,
       open: true
@@ -115,76 +111,60 @@ export default class Orders extends Component {
     this.setState({ open: false });
 
   };
+  handleAssending() {
+    let list = this.state.Orders;
+    let newlist = list.sort((a, b) => b.price - a.price);
+    this.setState({
+      Orders: newlist
+    });
+  }
+  handleDeceding() {
+    let list = this.state.Orders;
+    let newlist = list.sort((a, b) => a.price - b.price);
+    this.setState({
+      Orders: newlist
+    });
+  }
+
 
   render() {
-    const { open, Orders, currentPage, todosPerPage } = this.state;
-    // Logic for displaying current todos
-    const indexOfLastTodo = currentPage * todosPerPage;
-    const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
-    const currentTodos = Orders.slice(indexOfFirstTodo, indexOfLastTodo);
+    const { open } = this.state;
 
-
-    // Logic for displaying page numbers
-    const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(Orders.length / todosPerPage); i++) {
-      pageNumbers.push(i);
-    }
-
-    const renderPageNumbers = pageNumbers.map(number => {
+    let filteredOrders = this.state.Orders.filter(order => {
       return (
-        <button className="buttonS"
-          key={number}
-          id={number}
-          onClick={this.handleClick}
-        >
-          {number}
-        </button>
+        order.practitioneremail.indexOf(this.state.searchVal) !==
+        -1
       );
-    });
- 
+    },
+    )
+
     return (
       <div className="col-sm-10">
         <div className="aside">
           <center>
-          <h3 style={{"color": "black" , }}> Orders </h3>{" "}
+            <h3 style={{ "color": "black", }}> Orders </h3>{" "}
           </center>
           {/* electronic functionality*/}
           <div className="d-flex align-items-start E-fucn-con">
-            <div  className="p-2 E-fucn-con1">
-            <span class="e-func-inherit"></span>
-            <span class="e-func-inherit"></span>
-            <span class="e-func-inherit"></span>
+            <div className="p-2 E-fucn-con1">
+              <span className="e-func-inherit"></span>
+              <span className="e-func-inherit"></span>
+              <span className="e-func-inherit"></span>
             </div>
             {/*drop down */}
             <div className="p-2 drop">
-              <div className="btn-group" class="drop-btn">
-                <button type="button" class="btn btn-danger">
-                  Action
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-danger dropdown-toggle dropdown-toggle-split"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false">
-                  <span className="sr-only">Toggle Dropdown</span>
-                </button>
-                <div className="dropdown-menu">
-                  <a className="dropdown-item" href="#">
-                    Action
-                  </a>
-                  <a className="dropdown-item" href="#">
-                    Another action
-                  </a>
-                  <a className="dropdown-item" href="#">
-                    Something else here
-                  </a>
-                  <div className="dropdown-divider" />
-                  <a className="dropdown-item" href="#">
-                    Separated link
-                  </a>
+                <div  className="drop-btn">
+                  <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+                    <DropdownToggle caret>Filerts</DropdownToggle>
+                    <DropdownMenu>
+                      <DropdownItem onClick={this.handleAssending.bind(this)}>by heighest Price to heighest</DropdownItem>
+                      <DropdownItem onClick={this.handleDeceding.bind(this)}>By lowest price to heighest</DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+
                 </div>
-              </div>
+
+              
             </div>
             {/*dropdown end */}
           </div>
@@ -192,17 +172,17 @@ export default class Orders extends Component {
           {/*search bar */}
 
           <form>
-            <div class="col-auto">
-              <i class="fas fa-search h4 text-body" />
+            <div className="col-auto">
+              <i className="fas fa-search h4 text-body" />
             </div>
             {/*end of col */}
-            <div class="col">
+            <div className="col">
               <input onChange={this.handleSearch.bind(this)}
                 value={this.state.searchVal}
                 name="searchVal"
-                class="form-control form-control-lg form-control-borderless"
+                className="form-control form-control-lg form-control-borderless"
                 type="search"
-                placeholder="Search topics or keywords"
+                placeholder="Search by Email of the Practioner"
               />
             </div>
             {/*end of col */}
@@ -214,22 +194,23 @@ export default class Orders extends Component {
 
           {/*search bar */}
           {/*table start */}
-          <div class="col-s-12">
-            <div class="table-responsive">
-              <table style={{ "color": "black", "textAlign": "center", "backgroundColor": "white", "border": "1" }} class="w3-table">
-                <tr>
-                  <th>checkout flag</th>
-                  <th>checkout time</th>
-                  <th>link expiration</th>
+          <div className="col-s-12">
+            <div className="table-responsive">
+              <table style={{ "color": "black", "textAlign": "center", "backgroundColor": "white", "border": "1" }} className="w3-table">
+              <thead>  
+              <tr>
+                  <th>Checkout flag</th>
+                  <th>Checkout time</th>
                   <th>Price  </th>
                   <th>Actions</th>
                 </tr>
-                {currentTodos.map((item, index) => {
+                </thead>
+                <tbody>
+                {filteredOrders.map((item, index) => {
                   return (
                     <tr key={item.firebaseRef}>
-                      <td>{item.checkout_flag}</td>
+                      <td>{item.checkout}</td>
                       <td>{item.checkout_time}</td>
-                      <td>{item.link_expiration}</td>
                       <td>{item.price}</td>
                       <td>
                         <button onClick={() => this.handleDelete(item.firebasekEY)} className="btn btn-primery"> Delete </button>
@@ -238,9 +219,7 @@ export default class Orders extends Component {
                     </tr>
                   )
                 })}
-                <ul id="page-numbers">
-                  {renderPageNumbers}
-                </ul>
+                </tbody>
               </table>
             </div>
           </div>
@@ -249,13 +228,13 @@ export default class Orders extends Component {
         <div>
           <Modal open={open} onClose={this.onCloseModal} center>
 
-            <div  className="Model">
+            <div className="Model">
               {this.state.modelData &&
                 <div>
-                  <h2 style={{"fontFamily": "Segoe UI', Tahoma, Geneva, Verdana, sans-serif"}}>Email : {this.state.modelData[0].practitioner_email}</h2>
-                  <h2 style={{"fontFamily": "Segoe UI', Tahoma, Geneva, Verdana, sans-serif"}}> Price : {this.state.modelData[0].price}</h2>
-               
-                 
+                  <h2 style={{ "fontFamily": "Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>Email : {this.state.modelData[0].buyer}</h2>
+                  <h2 style={{ "fontFamily": "Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}> Price : {this.state.modelData[0].price}</h2>
+
+
                 </div>
               }
 

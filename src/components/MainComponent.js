@@ -69,7 +69,7 @@ export default class MainComponent extends Component {
        
     })
     promise.catch(e => {
-        let err = e.message;
+      
         alert("admin not created , Try again")
     })
   }
@@ -79,7 +79,7 @@ export default class MainComponent extends Component {
     const { open } = this.state;
     return (
       <div>
-     { this.state.success && <div class="alert alert-secondary" role="alert">
+     { this.state.success && <div className="alert alert-secondary" role="alert">
   This is a secondary alert—check it out!
 </div>}
         <div className="container-fluid">
@@ -132,7 +132,7 @@ export default class MainComponent extends Component {
             </ul>
           </div>
           {/* Components start */}
-          {this.state.Practioners && <Practioners />}
+          {this.state.Practioners && <Practioners/>}
           {this.state.Parents && <Parents />}
           {this.state.Orders && <Orders />}
           {/* Components end */}
